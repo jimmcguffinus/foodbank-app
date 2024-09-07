@@ -1,26 +1,68 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
-function App() {
+// Define a simple Agency structure with just the agency name
+type Agency = {
+  agency: string;
+};
+
+const AgencyForm = () => {
+  // Initialize the state with just the agency name
+  const [agency, setAgency] = useState<Agency>({
+    agency: '',
+  });
+
+  // Initialize state for handling form validation errors
+  const [errors, setErrors] = useState<Partial<Record<keyof Agency, string>>>({});
+  const [submittedData, setSubmittedData] = useState<string | null>(null);
+
+  // Handle text input change for agency name
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAgency(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  // Submit handler for the form
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agency.agency) {
+      setErrors({ agency: 'Agency Name is required' });
+    } else {
+      setSubmittedData(agency.agency); // Set the submitted data (Agency Name)
+      console.log('Agency Data Submitted:', agency);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h2>Agency Information</h2>
+      <form onSubmit={handleSubmit}>
+        {/* Agency Name */}
+        <div>
+          <label>Agency Name</label>
+          <input
+            type="text"
+            name="agency"
+            value={agency.agency}
+            onChange={handleInputChange}
+            required
+          />
+          {errors.agency && <span style={{ color: 'red' }}>{errors.agency}</span>}
+        </div>
+
+        {/* Submit */}
+        <button type="submit">Submit</button>
+      </form>
+
+      {/* Show submitted data */}
+      {submittedData && (
+        <div>
+          <h3>Submitted Agency Name:</h3>
+          <p>{submittedData}</p>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-export default App;
+export default AgencyForm;
